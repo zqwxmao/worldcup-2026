@@ -2,8 +2,15 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
 export async function GET() {
-  const matches = await prisma.match.findMany({
-    orderBy: { matchTime: "asc" },
-  })
-  return NextResponse.json(matches)
+  try {
+    if (!prisma) {
+      return NextResponse.json({ error: "Database not available" }, { status: 503 })
+    }
+    const matches = await prisma.match.findMany({
+      orderBy: { matchTime: "asc" },
+    })
+    return NextResponse.json(matches)
+  } catch (e) {
+    return NextResponse.json({ error: "Failed to fetch matches" }, { status: 500 })
+  }
 }
