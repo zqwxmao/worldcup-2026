@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Match {
+  id        Int       @id @default(autoincrement())
+  homeTeam  String
+  awayTeam  String
+  homeFlag  String
+  awayFlag  String
+  group     String
+  matchTime DateTime
+  homeScore Int?
+  awayScore Int?
+  status    String    @default("scheduled") // scheduled | live | finished
+  createdAt DateTime  @default(now())
+
+  predictions Prediction[]
+}
+
+model Prediction {
+  id              Int      @id @default(autoincrement())
+  matchId         Int
+  userId          String   // uuid or registered user id
+  predictHomeScore Int
+  predictAwayScore Int
+  points          Int?
+  createdAt       DateTime @default(now())
+
+  match Match @relation(fields: [matchId], references: [id])
+}
+
+model PlayerCard {
+  id          Int      @id @default(autoincrement())
+  name        String
+  country     String
+  countryFlag String
+  rarity      String   // common | rare | legendary
+  position    String   // FW | MF | DF | GK
+  createdAt   DateTime @default(now())
+
+  userCards UserCard[]
+}
+
+model UserCard {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  cardId     Int
+  obtainedAt DateTime @default(now())
+
+  card PlayerCard @relation(fields: [cardId], references: [id])
+}
+
+model User {
+  id        String   @id
+  name      String
+  password  String?  // null for anonymous users
+  points    Int      @default(0)
+  streak    Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  userName  String
+  content   String
+  likes     Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  comments Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+}

@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-pitch: #1B8A4A;
+  --color-pitch-light: #00C853;
+  --color-pitch-dark: #0D4A2B;
+  --color-pitch-bg: #F4F7F4;
+  --color-pitch-gold: #F5A623;
+  --color-pitch-orange: #FF6D00;
+  --color-pitch-blue: #1A4A8A;
+  --color-pitch-card: #FFFFFF;
+  --color-pitch-text: #1A2A1A;
+  --color-pitch-muted: #5A7A6A;
+  --color-pitch-border: #D8E8D8;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+}
+
+body {
+  background: var(--color-pitch-bg);
+  color: var(--color-pitch-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}

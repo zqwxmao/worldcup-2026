@@ -1,0 +1,22 @@
+# deps
+node_modules/
+
+# next
+.next/
+out/
+
+# env
+.env*
+!.env.example
+
+# prisma
+prisma/migrations/
+
+# os
+.DS_Store
+
+# ide
+.vscode/
+.idea/
+
+/src/generated/prisma
