@@ -4,22 +4,28 @@ import MatchCard from "@/components/MatchCard"
 export const dynamic = "force-dynamic"
 
 export default async function HomePage() {
-  const matchesRaw = await prisma.match.findMany({
-    orderBy: { matchTime: "asc" },
-  })
+  let displayMatches: any[] = []
 
-  const matches = matchesRaw.map((m) => ({
-    ...m,
-    matchTime: m.matchTime.toISOString(),
-  }))
+  try {
+    const matchesRaw = await prisma.match.findMany({
+      orderBy: { matchTime: "asc" },
+    })
 
-  const todayMatches = matches.filter((m) => {
-    const today = new Date()
-    const matchDate = new Date(m.matchTime)
-    return matchDate.toDateString() === today.toDateString()
-  })
+    const matches = matchesRaw.map((m) => ({
+      ...m,
+      matchTime: m.matchTime.toISOString(),
+    }))
 
-  const displayMatches = todayMatches.length > 0 ? todayMatches : matches.slice(0, 6)
+    const todayMatches = matches.filter((m) => {
+      const today = new Date()
+      const matchDate = new Date(m.matchTime)
+      return matchDate.toDateString() === today.toDateString()
+    })
+
+    displayMatches = todayMatches.length > 0 ? todayMatches : matches.slice(0, 6)
+  } catch (e) {
+    console.log("数据库暂未连接，显示静态内容")
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
@@ -50,9 +56,16 @@ export default async function HomePage() {
         <a href="/matches" className="text-sm font-semibold text-pitch hover:underline">全部赛程 →</a>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-        {displayMatches.map((match) => (
-          <MatchCard key={match.id} match={match} />
-        ))}
+        {displayMatches.length > 0 ? (
+          displayMatches.map((match) => (
+            <MatchCard key={match.id} match={match} />
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8 text-pitch-muted bg-white rounded-xl border border-pitch-border">
+            <p className="text-lg mb-1">🏟️ 数据加载中</p>
+            <p className="text-sm">连接数据库后即可查看赛程</p>
+          </div>
+        )}
       </div>
 
       {/* Features Row */}
