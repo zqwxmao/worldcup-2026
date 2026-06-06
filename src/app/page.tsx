@@ -7,6 +7,7 @@ export default async function HomePage() {
   let displayMatches: any[] = []
 
   try {
+    if (!prisma) throw new Error("no prisma")
     const matchesRaw = await prisma.match.findMany({
       orderBy: { matchTime: "asc" },
     })
