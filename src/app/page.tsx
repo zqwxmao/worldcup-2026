@@ -4,9 +4,14 @@ import MatchCard from "@/components/MatchCard"
 export const dynamic = "force-dynamic"
 
 export default async function HomePage() {
-  const matches = await prisma.match.findMany({
+  const matchesRaw = await prisma.match.findMany({
     orderBy: { matchTime: "asc" },
   })
+
+  const matches = matchesRaw.map((m) => ({
+    ...m,
+    matchTime: m.matchTime.toISOString(),
+  }))
 
   const todayMatches = matches.filter((m) => {
     const today = new Date()
