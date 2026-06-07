@@ -1,0 +1,5 @@
+// 2026 世界杯 · 绿茵竞技场 - Game Design Rules
+// 此文件供 AI 辅助开发参考
+// 所有页面均为静态导出（Next.js output: 'export'）
+// 数据位于 src/data/ 目录下，直接硬编码
+// GitHub Pages 部署路径: /worldcup-2026/

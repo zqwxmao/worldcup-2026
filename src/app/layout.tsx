@@ -1,37 +1,76 @@
+"use client"
+
+import { usePathname } from "next/navigation"
 import type { Metadata } from "next"
 import "./globals.css"
 
-export const metadata: Metadata = {
-  title: "2026 世界杯 · 绿茵竞技场",
-  description: "2026 FIFA 世界杯球迷互动站 — 赛程、竞猜、球星卡、排行、社区",
-}
+const navItems = [
+  { label: "首页", href: "/", icon: "⚽" },
+  { label: "赛程", href: "/matches", icon: "📅" },
+  { label: "竞猜", href: "/predict", icon: "⚡" },
+  { label: "卡牌", href: "/cards", icon: "🃏" },
+  { label: "排行", href: "/leaderboard", icon: "🏆" },
+  { label: "社区", href: "/community", icon: "💬" },
+]
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="min-h-screen">
-        <nav className="sticky top-0 z-50 bg-white border-b border-pitch-border">
-          <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <a href="/" className="text-xl font-extrabold tracking-wide">
-              <span className="text-pitch">⚽ 2026</span>
-              <span className="text-pitch-dark"> 世界杯</span>
+      <body className="min-h-screen bg-green-50">
+        {/* 顶部导航 - 只显示首页logo */}
+        <nav className="sticky top-0 z-40 bg-white border-b border-green-200 shadow-sm">
+          <div className="max-w-4xl mx-auto px-3 h-12 flex items-center justify-between">
+            <a href="/" className="font-extrabold text-lg tracking-wide">
+              <span className="text-green-700">⚽ 2026</span>
+              <span className="text-green-900"> 世界杯</span>
             </a>
-            <div className="hidden md:flex items-center gap-6">
-              <a href="/" className="text-sm font-semibold text-pitch border-b-2 border-pitch pb-1">首页</a>
-              <a href="/matches" className="text-sm text-pitch-muted hover:text-pitch transition-colors">赛程</a>
-              <a href="/predict" className="text-sm text-pitch-muted hover:text-pitch transition-colors">竞猜</a>
-              <a href="/cards" className="text-sm text-pitch-muted hover:text-pitch transition-colors">卡牌</a>
-              <a href="/leaderboard" className="text-sm text-pitch-muted hover:text-pitch transition-colors">排行</a>
-              <a href="/community" className="text-sm text-pitch-muted hover:text-pitch transition-colors">社区</a>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-pitch-gold bg-amber-50 px-3 py-1 rounded-full">🏆 0</span>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pitch to-pitch-light flex items-center justify-center text-white text-sm font-bold">G</div>
-            </div>
+            <a href="/cards" className="text-xs font-bold text-yellow-600 bg-yellow-50 px-2.5 py-1 rounded-full">
+              🎁 免费开卡包
+            </a>
           </div>
         </nav>
+
         {children}
+
+        {/* 底部 Tab Bar */}
+        <BottomNav />
       </body>
     </html>
+  )
+}
+
+function BottomNav() {
+  const pathname = usePathname()
+  const basePath = "/worldcup-2026"
+
+  // 这个处理在 client side 取相对路径
+  const relativePath = pathname.replace(basePath, "") || "/"
+  const currentPath = relativePath === "/" ? "/" : relativePath.endsWith("/") ? relativePath.slice(0, -1) : relativePath
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-green-200 z-40">
+      <div className="max-w-4xl mx-auto flex justify-around items-center h-14">
+        {navItems.map((item) => {
+          const isActive = item.href === "/"
+            ? currentPath === "/"
+            : currentPath.startsWith(item.href)
+          return (
+            <a
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center justify-center gap-0.5 transition-all ${
+                isActive ? "text-green-700 scale-105" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <span className="text-base">{item.icon}</span>
+              <span className={`text-[9px] font-semibold ${isActive ? "text-green-700" : "text-gray-400"}`}>
+                {item.label}
+              </span>
+              {isActive && <div className="w-4 h-0.5 bg-green-700 rounded-full mt-0.5" />}
+            </a>
+          )
+        })}
+      </div>
+    </div>
   )
 }
