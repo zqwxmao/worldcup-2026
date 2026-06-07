@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026世界杯</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;background:#f0f7f0;color:#1a2a1a;padding:16px}
+.hero{background:linear-gradient(135deg,#0d4a2b,#1b8a4a);color:white;border-radius:12px;padding:24px;margin-bottom:16px}
+.hero h1{font-size:24px;margin-bottom:4px}
+.hero p{font-size:14px;color:rgba(255,255,255,.8);margin-bottom:16px}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;margin-right:8px}
+.btn-gold{background:#f5a623;color:#0d4a2b}
+.btn-white{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white}
+.card{background:white;border:1px solid #d8e8d8;border-radius:10px;padding:16px;margin-bottom:12px}
+.card h3{font-size:14px;color:#0d4a2b;margin-bottom:8px}
+.match{display:flex;align-items:center;gap:8px;padding:12px;background:#f8fbf8;border-radius:8px;margin-bottom:8px}
+.match-teams{flex:1;display:flex;align-items:center;justify-content:space-between}
+.team{text-align:center;flex:1}
+.team .flag{font-size:20px}
+.team .name{font-size:12px;font-weight:700;margin-top:2px}
+.score{font-size:16px;font-weight:800;color:#0d4a2b}
+.vs{font-size:10px;color:#999}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #d8e8d8;display:flex;justify-content:space-around;padding:8px 0 4px}
+.nav a{text-decoration:none;color:#999;font-size:10px;text-align:center}
+.nav a.active{color:#1b8a4a}
+.nav a .icon{font-size:16px;display:block}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>2026 <span style="color:#f5a623">世界杯</span></h1>
+  <p>🇺🇸 🇨🇦 🇲🇽 · 48支球队 · 104场比赛</p>
+  <div>
+    <a href="matches.html" class="btn btn-gold">⚡ 开始竞猜</a>
+    <a href="matches.html" class="btn btn-white">📅 赛程表</a>
+  </div>
+</div>
+
+<h3 style="font-size:14px;color:#0d4a2b;margin-bottom:8px">📋 热门比赛</h3>
+
+<div class="match">
+  <div class="match-teams">
+    <div class="team"><div class="flag">🇺🇸</div><div class="name">美国</div></div>
+    <div class="score">1:0</div>
+    <div class="team"><div class="flag">🇨🇦</div><div class="name">加拿大</div></div>
+  </div>
+</div>
+<div class="match">
+  <div class="match-teams">
+    <div class="team"><div class="flag">🇲🇽</div><div class="name">墨西哥</div></div>
+    <div class="score">2:0</div>
+    <div class="team"><div class="flag">🇰🇷</div><div class="name">韩国</div></div>
+  </div>
+</div>
+<div class="match">
+  <div class="match-teams">
+    <div class="team"><div class="flag">🇲🇦</div><div class="name">摩洛哥</div></div>
+    <div class="score">1:1</div>
+    <div class="team"><div class="flag">🇳🇿</div><div class="name">新西兰</div></div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>🃏 球星卡收集</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px">
+      <div style="aspect-ratio:3/4;background:linear-gradient(to bottom,#fef9c3,#fef3c7);border:1px solid #eab308;border-radius:6px;padding:4px;text-align:center">
+        <div style="font-size:18px">🇦🇷</div>
+        <div style="font-size:9px;font-weight:700">梅西</div>
+        <div style="font-size:8px;color:#666">96</div>
+      </div>
+      <div style="aspect-ratio:3/4;background:linear-gradient(to bottom,#fef9c3,#fef3c7);border:1px solid #eab308;border-radius:6px;padding:4px;text-align:center">
+        <div style="font-size:18px">🇫🇷</div>
+        <div style="font-size:9px;font-weight:700">姆巴佩</div>
+        <div style="font-size:8px;color:#666">94</div>
+      </div>
+      <div style="aspect-ratio:3/4;background:linear-gradient(to bottom,#dbeafe,#e0f2fe);border:1px solid #38bdf8;border-radius:6px;padding:4px;text-align:center">
+        <div style="font-size:18px">🇧🇷</div>
+        <div style="font-size:9px;font-weight:700">维尼修斯</div>
+        <div style="font-size:8px;color:#666">90</div>
+      </div>
+    </div>
+    <a href="cards.html" style="display:block;background:#1b8a4a;color:white;text-align:center;padding:8px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700">🎁 开启卡包</a>
+  </div>
+
+  <div class="card">
+    <h3>🏆 竞猜排行</h3>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e8f0e8;font-size:12px">
+      <span style="color:#d97706">🥇</span><span>绿茵预言家</span><span style="font-weight:700;color:#1b8a4a">2460</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e8f0e8;font-size:12px">
+      <span style="color:#d97706">🥈</span><span>足球先知</span><span style="font-weight:700;color:#1b8a4a">2210</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px">
+      <span style="color:#d97706">🥉</span><span>梅老板的右脚</span><span style="font-weight:700;color:#1b8a4a">1980</span>
+    </div>
+    <a href="leaderboard.html" style="display:block;text-align:center;font-size:11px;color:#1b8a4a;margin-top:6px">完整排行 →</a>
+  </div>
+</div>
+
+<div class="card">
+  <h3>💬 社区热议</h3>
+  <p style="font-size:12px;margin-bottom:4px;line-height:1.5">🇺🇸🇨🇦🇲🇽 2026世界杯就要开打了！48支球队、104场比赛，史上最大规模的世界杯！</p>
+  <div style="font-size:10px;color:#999">👍 128  💬 56</div>
+</div>
+
+<div style="text-align:center;padding:16px;font-size:10px;color:#999;border-top:1px solid #d8e8d8;margin-bottom:50px">
+  © 2026 世界杯球迷站 · 非官方
+</div>
+
+<div class="nav">
+  <a href="/worldcup-2026/test.html" class="active"><span class="icon">⚽</span>首页</a>
+  <a href="/worldcup-2026/matches/"><span class="icon">📅</span>赛程</a>
+  <a href="/worldcup-2026/predict/"><span class="icon">⚡</span>竞猜</a>
+  <a href="/worldcup-2026/cards/"><span class="icon">🃏</span>卡牌</a>
+  <a href="/worldcup-2026/leaderboard/"><span class="icon">🏆</span>排行</a>
+  <a href="/worldcup-2026/community/"><span class="icon">💬</span>社区</a>
+</div>
+
+</body>
+</html>
