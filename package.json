@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "generate": "node scripts/generate-data.js",
+    "seed": "node scripts/seed-db.js",
     "start": "next start",
     "lint": "eslint"
   },
@@ -14,6 +16,7 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-tabs": "^1.1.13",
     "@tanstack/react-query": "^5.101.0",
+    "better-sqlite3": "^12.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",

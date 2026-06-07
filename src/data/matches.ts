@@ -1,5 +1,6 @@
-// 2026 世界杯完整赛程数据
-// 48 支队伍，8 个小组（A-H），每组 6 队 → 小组赛每队 3 场
+// 此文件由 scripts/generate-data.js 自动生成
+// 数据源: data/worldcup.db (SQLite)
+// 手动修改将被覆盖！请修改数据库或 seed 脚本。
 
 export interface Match {
   id: number
@@ -8,138 +9,995 @@ export interface Match {
   homeFlag: string
   awayFlag: string
   group: string
-  round: string // "group" | "round32" | "round16" | "quarter" | "semi" | "final"
-  matchTime: string // ISO
+  round: string
+  matchTime: string
   status: "scheduled" | "live" | "finished"
   homeScore?: number
   awayScore?: number
   stadium?: string
 }
 
-// 2026 世界杯 48 队分组（基于 FIFA 排名 + 各大洲名额）
 export const groups: Record<string, { team: string; flag: string }[]> = {
-  A: [
+  "A": [
     { team: "美国", flag: "🇺🇸" },
     { team: "加拿大", flag: "🇨🇦" },
     { team: "墨西哥", flag: "🇲🇽" },
     { team: "韩国", flag: "🇰🇷" },
     { team: "摩洛哥", flag: "🇲🇦" },
-    { team: "新西兰", flag: "🇳🇿" },
+    { team: "新西兰", flag: "🇳🇿" }
   ],
-  B: [
+  "B": [
     { team: "阿根廷", flag: "🇦🇷" },
     { team: "英格兰", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
     { team: "克罗地亚", flag: "🇭🇷" },
     { team: "沙特阿拉伯", flag: "🇸🇦" },
     { team: "冰岛", flag: "🇮🇸" },
-    { team: "牙买加", flag: "🇯🇲" },
+    { team: "牙买加", flag: "🇯🇲" }
   ],
-  C: [
+  "C": [
     { team: "法国", flag: "🇫🇷" },
     { team: "荷兰", flag: "🇳🇱" },
     { team: "日本", flag: "🇯🇵" },
     { team: "伊朗", flag: "🇮🇷" },
     { team: "尼日利亚", flag: "🇳🇬" },
-    { team: "厄瓜多尔", flag: "🇪🇨" },
+    { team: "厄瓜多尔", flag: "🇪🇨" }
   ],
-  D: [
+  "D": [
     { team: "巴西", flag: "🇧🇷" },
     { team: "德国", flag: "🇩🇪" },
     { team: "葡萄牙", flag: "🇵🇹" },
     { team: "瑞士", flag: "🇨🇭" },
     { team: "澳大利亚", flag: "🇦🇺" },
-    { team: "哥斯达黎加", flag: "🇨🇷" },
+    { team: "哥斯达黎加", flag: "🇨🇷" }
   ],
-  E: [
+  "E": [
     { team: "西班牙", flag: "🇪🇸" },
     { team: "意大利", flag: "🇮🇹" },
     { team: "乌拉圭", flag: "🇺🇾" },
     { team: "喀麦隆", flag: "🇨🇲" },
     { team: "伊拉克", flag: "🇮🇶" },
-    { team: "加纳", flag: "🇬🇭" },
+    { team: "加纳", flag: "🇬🇭" }
   ],
-  F: [
+  "F": [
     { team: "比利时", flag: "🇧🇪" },
     { team: "哥伦比亚", flag: "🇨🇴" },
     { team: "塞尔维亚", flag: "🇷🇸" },
     { team: "阿尔及利亚", flag: "🇩🇿" },
     { team: "巴拉圭", flag: "🇵🇾" },
-    { team: "斯洛文尼亚", flag: "🇸🇮" },
+    { team: "斯洛文尼亚", flag: "🇸🇮" }
   ],
-  G: [
+  "G": [
     { team: "丹麦", flag: "🇩🇰" },
     { team: "波兰", flag: "🇵🇱" },
     { team: "土耳其", flag: "🇹🇷" },
     { team: "埃及", flag: "🇪🇬" },
     { team: "塞内加尔", flag: "🇸🇳" },
-    { team: "阿联酋", flag: "🇦🇪" },
+    { team: "阿联酋", flag: "🇦🇪" }
   ],
-  H: [
+  "H": [
     { team: "智利", flag: "🇨🇱" },
     { team: "奥地利", flag: "🇦🇹" },
     { team: "挪威", flag: "🇳🇴" },
     { team: "捷克", flag: "🇨🇿" },
     { team: "马里", flag: "🇲🇱" },
-    { team: "阿曼", flag: "🇴🇲" },
-  ],
+    { team: "阿曼", flag: "🇴🇲" }
+  ]
 }
 
-const stadiums = [
-  "梅赛德斯-奔驰体育场 (亚特兰大)",
-  "大都会体育场 (东卢瑟福)",
-  "SoFi体育场 (洛杉矶)",
-  "AT&T体育场 (阿灵顿)",
-  "箭头体育场 (堪萨斯城)",
-  "NRG体育场 (休斯顿)",
-  "李维斯体育场 (旧金山)",
-  "吉列体育场 (波士顿)",
-  "卢蒙体育场 (西雅图)",
-  "硬石体育场 (迈阿密)",
-  "BC体育馆 (温哥华)",
-  "阿兹特克体育场 (墨西哥城)",
-]
-
-// 生成小组赛（每组 6 队，每队踢 3 场 = 9 场/组）
-function generateGroupMatches(): Match[] {
-  const matches: Match[] = []
-  let id = 1
-
-  for (const [group, teams] of Object.entries(groups)) {
-    // 每组 6 队，每队 3 场 → 9 场
-    const fixtures = [
-      [0, 1], [2, 3], [4, 5],
-      [1, 3], [0, 4], [2, 5],
-      [3, 5], [1, 2], [0, 3],
-    ]
-    const baseDate = new Date("2026-06-11T10:00:00Z")
-    const dayOffset = (Object.keys(groups).indexOf(group) * 3) + 1
-
-    fixtures.forEach(([h, a], idx) => {
-      const date = new Date(baseDate)
-      date.setDate(date.getDate() + dayOffset + Math.floor(idx / 3))
-      date.setHours(10 + (idx % 3) * 4)
-
-      matches.push({
-        id: id++,
-        homeTeam: teams[h].team,
-        awayTeam: teams[a].team,
-        homeFlag: teams[h].flag,
-        awayFlag: teams[a].flag,
-        group: `第${group}组`,
-        round: "group",
-        matchTime: date.toISOString(),
-        status: idx === 0 ? "live" : idx < 3 ? "finished" : "scheduled",
-        homeScore: idx === 0 ? 1 : idx < 3 ? [2, 1, 3, 0, 1, 1][idx] : undefined,
-        awayScore: idx === 0 ? 0 : idx < 3 ? [0, 1, 1, 2, 0, 2][idx] : undefined,
-        stadium: stadiums[id % stadiums.length],
-      })
-    })
+export const allMatches: Match[] = [
+  {
+    "id": 1,
+    "homeTeam": "美国",
+    "awayTeam": "加拿大",
+    "homeFlag": "🇺🇸",
+    "awayFlag": "🇨🇦",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-12T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 2,
+    "homeTeam": "墨西哥",
+    "awayTeam": "韩国",
+    "homeFlag": "🇲🇽",
+    "awayFlag": "🇰🇷",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-12T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 3,
+    "homeTeam": "摩洛哥",
+    "awayTeam": "新西兰",
+    "homeFlag": "🇲🇦",
+    "awayFlag": "🇳🇿",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-12T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 4,
+    "homeTeam": "加拿大",
+    "awayTeam": "韩国",
+    "homeFlag": "🇨🇦",
+    "awayFlag": "🇰🇷",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-13T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 5,
+    "homeTeam": "美国",
+    "awayTeam": "摩洛哥",
+    "homeFlag": "🇺🇸",
+    "awayFlag": "🇲🇦",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-13T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 6,
+    "homeTeam": "墨西哥",
+    "awayTeam": "新西兰",
+    "homeFlag": "🇲🇽",
+    "awayFlag": "🇳🇿",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-13T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 7,
+    "homeTeam": "韩国",
+    "awayTeam": "新西兰",
+    "homeFlag": "🇰🇷",
+    "awayFlag": "🇳🇿",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-14T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 8,
+    "homeTeam": "加拿大",
+    "awayTeam": "墨西哥",
+    "homeFlag": "🇨🇦",
+    "awayFlag": "🇲🇽",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-14T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 9,
+    "homeTeam": "美国",
+    "awayTeam": "韩国",
+    "homeFlag": "🇺🇸",
+    "awayFlag": "🇰🇷",
+    "group": "第A组",
+    "round": "group",
+    "matchTime": "2026-06-14T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 10,
+    "homeTeam": "阿根廷",
+    "awayTeam": "英格兰",
+    "homeFlag": "🇦🇷",
+    "awayFlag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-15T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 11,
+    "homeTeam": "克罗地亚",
+    "awayTeam": "沙特阿拉伯",
+    "homeFlag": "🇭🇷",
+    "awayFlag": "🇸🇦",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-15T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 12,
+    "homeTeam": "冰岛",
+    "awayTeam": "牙买加",
+    "homeFlag": "🇮🇸",
+    "awayFlag": "🇯🇲",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-15T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
+  },
+  {
+    "id": 13,
+    "homeTeam": "英格兰",
+    "awayTeam": "沙特阿拉伯",
+    "homeFlag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "awayFlag": "🇸🇦",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-16T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 14,
+    "homeTeam": "阿根廷",
+    "awayTeam": "冰岛",
+    "homeFlag": "🇦🇷",
+    "awayFlag": "🇮🇸",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-16T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 15,
+    "homeTeam": "克罗地亚",
+    "awayTeam": "牙买加",
+    "homeFlag": "🇭🇷",
+    "awayFlag": "🇯🇲",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-16T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 16,
+    "homeTeam": "沙特阿拉伯",
+    "awayTeam": "牙买加",
+    "homeFlag": "🇸🇦",
+    "awayFlag": "🇯🇲",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-17T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 17,
+    "homeTeam": "英格兰",
+    "awayTeam": "克罗地亚",
+    "homeFlag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "awayFlag": "🇭🇷",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-17T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 18,
+    "homeTeam": "阿根廷",
+    "awayTeam": "沙特阿拉伯",
+    "homeFlag": "🇦🇷",
+    "awayFlag": "🇸🇦",
+    "group": "第B组",
+    "round": "group",
+    "matchTime": "2026-06-17T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 19,
+    "homeTeam": "法国",
+    "awayTeam": "荷兰",
+    "homeFlag": "🇫🇷",
+    "awayFlag": "🇳🇱",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-18T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 20,
+    "homeTeam": "日本",
+    "awayTeam": "伊朗",
+    "homeFlag": "🇯🇵",
+    "awayFlag": "🇮🇷",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-18T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 21,
+    "homeTeam": "尼日利亚",
+    "awayTeam": "厄瓜多尔",
+    "homeFlag": "🇳🇬",
+    "awayFlag": "🇪🇨",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-18T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 22,
+    "homeTeam": "荷兰",
+    "awayTeam": "伊朗",
+    "homeFlag": "🇳🇱",
+    "awayFlag": "🇮🇷",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-19T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 23,
+    "homeTeam": "法国",
+    "awayTeam": "尼日利亚",
+    "homeFlag": "🇫🇷",
+    "awayFlag": "🇳🇬",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-19T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 24,
+    "homeTeam": "日本",
+    "awayTeam": "厄瓜多尔",
+    "homeFlag": "🇯🇵",
+    "awayFlag": "🇪🇨",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-19T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
+  },
+  {
+    "id": 25,
+    "homeTeam": "伊朗",
+    "awayTeam": "厄瓜多尔",
+    "homeFlag": "🇮🇷",
+    "awayFlag": "🇪🇨",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-20T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 26,
+    "homeTeam": "荷兰",
+    "awayTeam": "日本",
+    "homeFlag": "🇳🇱",
+    "awayFlag": "🇯🇵",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-20T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 27,
+    "homeTeam": "法国",
+    "awayTeam": "伊朗",
+    "homeFlag": "🇫🇷",
+    "awayFlag": "🇮🇷",
+    "group": "第C组",
+    "round": "group",
+    "matchTime": "2026-06-20T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 28,
+    "homeTeam": "巴西",
+    "awayTeam": "德国",
+    "homeFlag": "🇧🇷",
+    "awayFlag": "🇩🇪",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-21T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 29,
+    "homeTeam": "葡萄牙",
+    "awayTeam": "瑞士",
+    "homeFlag": "🇵🇹",
+    "awayFlag": "🇨🇭",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-21T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 30,
+    "homeTeam": "澳大利亚",
+    "awayTeam": "哥斯达黎加",
+    "homeFlag": "🇦🇺",
+    "awayFlag": "🇨🇷",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-21T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 31,
+    "homeTeam": "德国",
+    "awayTeam": "瑞士",
+    "homeFlag": "🇩🇪",
+    "awayFlag": "🇨🇭",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-22T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 32,
+    "homeTeam": "巴西",
+    "awayTeam": "澳大利亚",
+    "homeFlag": "🇧🇷",
+    "awayFlag": "🇦🇺",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-22T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 33,
+    "homeTeam": "葡萄牙",
+    "awayTeam": "哥斯达黎加",
+    "homeFlag": "🇵🇹",
+    "awayFlag": "🇨🇷",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-22T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 34,
+    "homeTeam": "瑞士",
+    "awayTeam": "哥斯达黎加",
+    "homeFlag": "🇨🇭",
+    "awayFlag": "🇨🇷",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-23T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 35,
+    "homeTeam": "德国",
+    "awayTeam": "葡萄牙",
+    "homeFlag": "🇩🇪",
+    "awayFlag": "🇵🇹",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-23T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 36,
+    "homeTeam": "巴西",
+    "awayTeam": "瑞士",
+    "homeFlag": "🇧🇷",
+    "awayFlag": "🇨🇭",
+    "group": "第D组",
+    "round": "group",
+    "matchTime": "2026-06-23T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
+  },
+  {
+    "id": 37,
+    "homeTeam": "西班牙",
+    "awayTeam": "意大利",
+    "homeFlag": "🇪🇸",
+    "awayFlag": "🇮🇹",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-24T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 38,
+    "homeTeam": "乌拉圭",
+    "awayTeam": "喀麦隆",
+    "homeFlag": "🇺🇾",
+    "awayFlag": "🇨🇲",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-24T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 39,
+    "homeTeam": "伊拉克",
+    "awayTeam": "加纳",
+    "homeFlag": "🇮🇶",
+    "awayFlag": "🇬🇭",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-24T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 40,
+    "homeTeam": "意大利",
+    "awayTeam": "喀麦隆",
+    "homeFlag": "🇮🇹",
+    "awayFlag": "🇨🇲",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-25T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 41,
+    "homeTeam": "西班牙",
+    "awayTeam": "伊拉克",
+    "homeFlag": "🇪🇸",
+    "awayFlag": "🇮🇶",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-25T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 42,
+    "homeTeam": "乌拉圭",
+    "awayTeam": "加纳",
+    "homeFlag": "🇺🇾",
+    "awayFlag": "🇬🇭",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-25T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 43,
+    "homeTeam": "喀麦隆",
+    "awayTeam": "加纳",
+    "homeFlag": "🇨🇲",
+    "awayFlag": "🇬🇭",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-26T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 44,
+    "homeTeam": "意大利",
+    "awayTeam": "乌拉圭",
+    "homeFlag": "🇮🇹",
+    "awayFlag": "🇺🇾",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-26T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 45,
+    "homeTeam": "西班牙",
+    "awayTeam": "喀麦隆",
+    "homeFlag": "🇪🇸",
+    "awayFlag": "🇨🇲",
+    "group": "第E组",
+    "round": "group",
+    "matchTime": "2026-06-26T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 46,
+    "homeTeam": "比利时",
+    "awayTeam": "哥伦比亚",
+    "homeFlag": "🇧🇪",
+    "awayFlag": "🇨🇴",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-27T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 47,
+    "homeTeam": "塞尔维亚",
+    "awayTeam": "阿尔及利亚",
+    "homeFlag": "🇷🇸",
+    "awayFlag": "🇩🇿",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-27T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 48,
+    "homeTeam": "巴拉圭",
+    "awayTeam": "斯洛文尼亚",
+    "homeFlag": "🇵🇾",
+    "awayFlag": "🇸🇮",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-27T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
+  },
+  {
+    "id": 49,
+    "homeTeam": "哥伦比亚",
+    "awayTeam": "阿尔及利亚",
+    "homeFlag": "🇨🇴",
+    "awayFlag": "🇩🇿",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-28T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 50,
+    "homeTeam": "比利时",
+    "awayTeam": "巴拉圭",
+    "homeFlag": "🇧🇪",
+    "awayFlag": "🇵🇾",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-28T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 51,
+    "homeTeam": "塞尔维亚",
+    "awayTeam": "斯洛文尼亚",
+    "homeFlag": "🇷🇸",
+    "awayFlag": "🇸🇮",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-28T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 52,
+    "homeTeam": "阿尔及利亚",
+    "awayTeam": "斯洛文尼亚",
+    "homeFlag": "🇩🇿",
+    "awayFlag": "🇸🇮",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-29T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 53,
+    "homeTeam": "哥伦比亚",
+    "awayTeam": "塞尔维亚",
+    "homeFlag": "🇨🇴",
+    "awayFlag": "🇷🇸",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-29T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 54,
+    "homeTeam": "比利时",
+    "awayTeam": "阿尔及利亚",
+    "homeFlag": "🇧🇪",
+    "awayFlag": "🇩🇿",
+    "group": "第F组",
+    "round": "group",
+    "matchTime": "2026-06-29T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 55,
+    "homeTeam": "丹麦",
+    "awayTeam": "波兰",
+    "homeFlag": "🇩🇰",
+    "awayFlag": "🇵🇱",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-06-30T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 56,
+    "homeTeam": "土耳其",
+    "awayTeam": "埃及",
+    "homeFlag": "🇹🇷",
+    "awayFlag": "🇪🇬",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-06-30T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 57,
+    "homeTeam": "塞内加尔",
+    "awayTeam": "阿联酋",
+    "homeFlag": "🇸🇳",
+    "awayFlag": "🇦🇪",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-06-30T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 58,
+    "homeTeam": "波兰",
+    "awayTeam": "埃及",
+    "homeFlag": "🇵🇱",
+    "awayFlag": "🇪🇬",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-01T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 59,
+    "homeTeam": "丹麦",
+    "awayTeam": "塞内加尔",
+    "homeFlag": "🇩🇰",
+    "awayFlag": "🇸🇳",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-01T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 60,
+    "homeTeam": "土耳其",
+    "awayTeam": "阿联酋",
+    "homeFlag": "🇹🇷",
+    "awayFlag": "🇦🇪",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-01T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
+  },
+  {
+    "id": 61,
+    "homeTeam": "埃及",
+    "awayTeam": "阿联酋",
+    "homeFlag": "🇪🇬",
+    "awayFlag": "🇦🇪",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-02T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "大都会体育场 (东卢瑟福)"
+  },
+  {
+    "id": 62,
+    "homeTeam": "波兰",
+    "awayTeam": "土耳其",
+    "homeFlag": "🇵🇱",
+    "awayFlag": "🇹🇷",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-02T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "SoFi体育场 (洛杉矶)"
+  },
+  {
+    "id": 63,
+    "homeTeam": "丹麦",
+    "awayTeam": "埃及",
+    "homeFlag": "🇩🇰",
+    "awayFlag": "🇪🇬",
+    "group": "第G组",
+    "round": "group",
+    "matchTime": "2026-07-02T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "AT&T体育场 (阿灵顿)"
+  },
+  {
+    "id": 64,
+    "homeTeam": "智利",
+    "awayTeam": "奥地利",
+    "homeFlag": "🇨🇱",
+    "awayFlag": "🇦🇹",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-03T02:00:00.000Z",
+    "status": "live",
+    "homeScore": 1,
+    "awayScore": 0,
+    "stadium": "箭头体育场 (堪萨斯城)"
+  },
+  {
+    "id": 65,
+    "homeTeam": "挪威",
+    "awayTeam": "捷克",
+    "homeFlag": "🇳🇴",
+    "awayFlag": "🇨🇿",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-03T06:00:00.000Z",
+    "status": "finished",
+    "homeScore": 2,
+    "awayScore": 0,
+    "stadium": "NRG体育场 (休斯顿)"
+  },
+  {
+    "id": 66,
+    "homeTeam": "马里",
+    "awayTeam": "阿曼",
+    "homeFlag": "🇲🇱",
+    "awayFlag": "🇴🇲",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-03T10:00:00.000Z",
+    "status": "finished",
+    "homeScore": 1,
+    "awayScore": 1,
+    "stadium": "李维斯体育场 (旧金山)"
+  },
+  {
+    "id": 67,
+    "homeTeam": "奥地利",
+    "awayTeam": "捷克",
+    "homeFlag": "🇦🇹",
+    "awayFlag": "🇨🇿",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-04T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "吉列体育场 (波士顿)"
+  },
+  {
+    "id": 68,
+    "homeTeam": "智利",
+    "awayTeam": "马里",
+    "homeFlag": "🇨🇱",
+    "awayFlag": "🇲🇱",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-04T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "卢蒙体育场 (西雅图)"
+  },
+  {
+    "id": 69,
+    "homeTeam": "挪威",
+    "awayTeam": "阿曼",
+    "homeFlag": "🇳🇴",
+    "awayFlag": "🇴🇲",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-04T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "硬石体育场 (迈阿密)"
+  },
+  {
+    "id": 70,
+    "homeTeam": "捷克",
+    "awayTeam": "阿曼",
+    "homeFlag": "🇨🇿",
+    "awayFlag": "🇴🇲",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-05T02:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "BC体育馆 (温哥华)"
+  },
+  {
+    "id": 71,
+    "homeTeam": "奥地利",
+    "awayTeam": "挪威",
+    "homeFlag": "🇦🇹",
+    "awayFlag": "🇳🇴",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-05T06:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "阿兹特克体育场 (墨西哥城)"
+  },
+  {
+    "id": 72,
+    "homeTeam": "智利",
+    "awayTeam": "捷克",
+    "homeFlag": "🇨🇱",
+    "awayFlag": "🇨🇿",
+    "group": "第H组",
+    "round": "group",
+    "matchTime": "2026-07-05T10:00:00.000Z",
+    "status": "scheduled",
+    "stadium": "梅赛德斯-奔驰体育场 (亚特兰大)"
   }
-
-  return matches
-}
-
-export const allMatches = generateGroupMatches()
+]
 
 export function getMatchesByGroup(group: string): Match[] {
   return allMatches.filter((m) => m.group === `第${group}组`)

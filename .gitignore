@@ -21,3 +21,7 @@ prisma/migrations/
 
 /src/generated/prisma
 .vercel
+
+# SQLite WAL files
+*.db-shm
+*.db-wal

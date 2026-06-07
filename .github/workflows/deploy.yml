@@ -1,5 +1,5 @@
 # 自动部署到 GitHub Pages
-# 每次 push 到 main 分支时自动构建并发布
+# 数据来源于 SQLite 数据库 (data/worldcup.db)
 
 name: Deploy to GitHub Pages
 
@@ -35,7 +35,10 @@ jobs:
           version: 9
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
+
+      - name: Generate data from database
+        run: pnpm generate
 
       - name: Build with Next.js
         run: pnpm build
