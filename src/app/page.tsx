@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma"
+import { prismaPromise } from "@/lib/prisma"
 import MatchCard from "@/components/MatchCard"
 
 export const dynamic = "force-dynamic"
@@ -7,6 +7,7 @@ export default async function HomePage() {
   let displayMatches: any[] = []
 
   try {
+    const prisma = await prismaPromise
     if (!prisma) throw new Error("no prisma")
     const matchesRaw = await prisma.match.findMany({
       orderBy: { matchTime: "asc" },
