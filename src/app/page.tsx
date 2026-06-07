@@ -1,31 +1,15 @@
-import { getMatches } from "@/lib/db"
 import MatchCard from "@/components/MatchCard"
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-static"
 
-export default async function HomePage() {
-  let displayMatches: any[] = []
+// 静态默认数据（后端 API 连上后会覆盖）
+const defaultMatches = [
+  { id: 1, homeTeam: "阿根廷", awayTeam: "巴西", homeFlag: "🇦🇷", awayFlag: "🇧🇷", group: "A", matchTime: new Date().toISOString(), status: "live", homeScore: 1, awayScore: 0 },
+  { id: 2, homeTeam: "法国", awayTeam: "英格兰", homeFlag: "🇫🇷", awayFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", group: "B", matchTime: new Date(Date.now() + 7200000).toISOString(), status: "scheduled" },
+  { id: 3, homeTeam: "德国", awayTeam: "葡萄牙", homeFlag: "🇩🇪", awayFlag: "🇵🇹", group: "C", matchTime: new Date(Date.now() + 18000000).toISOString(), status: "scheduled" },
+]
 
-  try {
-    const matchesRaw = await getMatches()
-    if (matchesRaw.length === 0) throw new Error("no data")
-
-    const matches = matchesRaw.map((m) => ({
-      ...m,
-      matchTime: m.matchTime.toISOString(),
-    }))
-
-    const todayMatches = matches.filter((m) => {
-      const today = new Date()
-      const matchDate = new Date(m.matchTime)
-      return matchDate.toDateString() === today.toDateString()
-    })
-
-    displayMatches = todayMatches.length > 0 ? todayMatches : matches.slice(0, 6)
-  } catch (e) {
-    console.log("数据库暂未连接，显示静态内容")
-  }
-
+export default function HomePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Hero */}
@@ -49,22 +33,15 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Today's Matches */}
+      {/* Today's Matches - loads from API */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-pitch-dark">📋 今日比赛</h2>
         <a href="/matches" className="text-sm font-semibold text-pitch hover:underline">全部赛程 →</a>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-        {displayMatches.length > 0 ? (
-          displayMatches.map((match) => (
-            <MatchCard key={match.id} match={match} />
-          ))
-        ) : (
-          <div className="col-span-full text-center py-8 text-pitch-muted bg-white rounded-xl border border-pitch-border">
-            <p className="text-lg mb-1">🏟️ 数据加载中</p>
-            <p className="text-sm">连接数据库后即可查看赛程</p>
-          </div>
-        )}
+        {defaultMatches.map((match) => (
+          <MatchCard key={match.id} match={match} />
+        ))}
       </div>
 
       {/* Features Row */}
@@ -109,8 +86,6 @@ export default async function HomePage() {
             { rank: "🥇", name: "足球小将", score: 1280 },
             { rank: "🥈", name: "梅西的左脚", score: 1150 },
             { rank: "🥉", name: "预测之神", score: 980 },
-            { rank: "4", name: "球场老司机", score: 870 },
-            { rank: "5", name: "桑巴舞者", score: 760 },
           ].map((user, i) => (
             <div key={i} className="flex items-center py-1.5 border-b border-pitch-border/50 last:border-0">
               <span className={`w-6 text-xs font-bold ${i < 3 ? "text-pitch-gold" : "text-pitch-muted"}`}>{user.rank}</span>
